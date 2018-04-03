@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  </head>
+  <body>
+    <h1>UserScript: colorDate 效果显示</h1>
+    <h2>采用色值</h2>
+    <div class="color-panel"></div>
+
+    <h2>效果显示</h2>
+    <div class="date-demo">
+      <span> 发表于 1990-08-01 00:00:00</span><br/>
+      <span> 发表于 2010/08/01</span><br/>
+      <span> 发表于 Aug 01,2013</span><br/>
+      <span> 发表于 oct 01 2014</span><br/>
+      <span> 发表于 2015年08月03日 </span><br/>
+      <span> 发表于 2016年08月03日 </span><br/>
+      <span> 发表于 2017年03月03日 </span><br/>
+      <span> 发表于 2017年04月03日 </span><br/>
+      <span> 发表于 2017年05月03日 </span><br/>
+      <span> 发表于 2017年11月03日 </span><br/>
+      <span> 发表于 2017年12月03日 </span><br/>
+      <span> 发表于 01月03日 </span><br/>
+      <span> 发表于 02月03日 </span><br/>
+      <span> 发表于 03月03日 </span><br/>
+      <span> 发表于 01-03 </span><br/>
+      <span> 发表于 02-03 </span><br/>
+      <span> 发表于 03-03 </span><br/>
+    </div>
+
+    <script>
+      (function(){
+        function getElement(className){
+          return document.getElementsByClassName(className)[0]
+        }
+
+        function fillColorPanel(){
+          var colors1 = [
+            "#ff0000",
+            "#ff5f00",
+            "#d700ff",
+            "#8700ff",
+            "#00af00",
+            "#00d700",
+          ]
+            var html = "";
+          colors1.forEach(function(color){
+            html += '<div style="display: inline-block;background-color: '+ color +'; color: #fff; width: 60px; height: 40px; padding: 5px; margin-left: 5px;">'+color+'</div>';
+          })
+          var e = getElement("color-panel")
+            e.innerHTML = html
+        }
+
+        fillColorPanel();
+      })();
+    </script>
+  </body>
+</html>

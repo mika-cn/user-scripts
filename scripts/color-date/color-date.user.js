@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name     colorDate
 // @namespace https://github.com/mika-cn/user-scripts
-// @description "Set date color according to date"
-// @version  1.0.2
+// @description "Set date color according to date 根据网页上日期的新旧程度， 给日期进行着色， 比如说已经是5年前的一个日期会成为红色， 以便提醒阅览者，注意信息可能过于陈旧。"
+// @version  1.0.3
 // @grant    none
 // ==/UserScript==
 // @author   mika
