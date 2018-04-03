@@ -2,7 +2,7 @@
 // @name     WranOutdatePage
 // @namespace https://github.com/mika-cn/user-scripts
 // @description "warn reader when page/article might outdate(3 years ago). 提示读者 (网页/文章） 可能太陈旧 （判断时长 3年)。 脚本会给出一个小提示，让读者注意。 "
-// @version  1.0.1
+// @version  1.0.2
 // @grant    none
 // ==/UserScript==
 // @author   mika
