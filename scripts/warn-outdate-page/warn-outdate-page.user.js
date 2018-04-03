@@ -1,10 +1,12 @@
 // ==UserScript==
 // @name     WranOutdatePage
+// @namespace https://github.com/mika-cn/user-scripts
 // @description "warn reader when page/article might outdate(3 years ago)."
 // @version  1
 // @grant    none
-// @author   mika
 // ==/UserScript==
+// @author   mika
+// @code     https://github.com/mika-cn/user-scripts
 
 (function(){
   function extractUrlDate(url){

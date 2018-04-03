@@ -1,10 +1,12 @@
 // ==UserScript==
 // @name     colorDate
+// @namespace https://github.com/mika-cn/user-scripts
 // @description "Set date color according to date"
-// @version  1
+// @version  1.0.2
 // @grant    none
-// @author   mika
 // ==/UserScript==
+// @author   mika
+// @code     https://github.com/mika-cn/user-scripts
 
 (function(){
 
@@ -195,7 +197,7 @@
       }
     }
     var observer = new MutationObserver(mutated);
-    observer.observe(document.body, {
+    observer.observe(document, {
       attributes: false,
       childList: true,
       subtree: true
