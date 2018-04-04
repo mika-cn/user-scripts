@@ -2,14 +2,14 @@
 // @name     colorDate
 // @namespace https://github.com/mika-cn/user-scripts
 // @description "Set date color according to date 根据网页上日期的新旧程度， 给日期进行着色， 比如说已经是5年前的一个日期会成为红色， 以便提醒阅览者，注意信息可能过于陈旧。"
-// @version  1.0.3
+// @version  1.0.9
 // @grant    none
-// ==/UserScript==
+// @include *
 // @author   mika
-// @code     https://github.com/mika-cn/user-scripts
+// ==/UserScript==
 
 (function(){
-
+  'use strict';
 
   /*
    * 获取文本节点迭代器
@@ -38,10 +38,11 @@
     while (currentNode = nodeIterator.nextNode()) {
       var v = currentNode.nodeValue;
       var rule = rules.some(function(rule){
-        return !!v.match(rule.regExp)
+        return !!v.match(rule.regExp);
       });
+
       if(rule){
-        nodes.push(currentNode)
+        nodes.push(currentNode);
       }
     }
     return nodes;
@@ -59,54 +60,111 @@
     {color: "#8700ff", threshold: 183 * day},
     {color: "#00af00", threshold: 7 * day},
     {color: "#00d700", threshold: 1 * day},
-  ]
+  ];
+
+
+  var monthPart = (`
+    Jan|January|
+    Feb|February|
+    Mar|March|
+    Apr|April|
+    May|
+    Jun|June|
+    Jul|July|
+    Aug|Augest|
+    Sep|Sept|September|
+    Oct|October|
+    Nov|November|
+    Dec|December
+  `).replace(/\n\s*/gm, '');
 
   /*
    * 判断规则
    */
   var rules = [
-    {key: "regExp_01", regExp: /\d{4}-[0,1]?\d-[0-3]?\d/g},
-    {key: "regExp_02", regExp: /\d{4}\/[0,1]?\d\/[0-3]?\d/g},
-  //  {key: "regExp_03", regExp: /(\d{4}-[0,1]?\d)[^-]*/g},
-  //  {key: "regExp_04", regExp: /(\d{4}\/[0,1]?\d)[^\/]*/g},
-    {key: "regExp_05", regExp: /[0,1]{1}\d-[0-3]{1}\d/g},
-    {key: "regExp_06", regExp: /(?:Jan|jan|Feb|feb|Mar|mar|Apr|apr|May|may|Jun|jun|Jul|jul|Aug|aug|Sep|sep|Oct|oct|Nov|nov|Dec|dec) [0-3]?\d[,\s]{1}\s?\d{4}/},
-
-    {key: "regExp_11", regExp: /\d{4}年[0,1]?\d月[0-3]?\d日/g},
-    {key: "regExp_13", regExp: /\d{4}年[0,1]?\d月/g},
-    {key: "regExp_15", regExp: /[0,1]?\d月[0-3]?\d日/g},
-  ]
+    {key: "01", regExp: /\d{4}-[0,1]?\d-[0-3]?\d/g},
+    {key: "01", regExp: /\d{4}\/[0,1]?\d\/[0-3]?\d/g},
+    {key: "02", regExp: /(\d{4}-[0,1]?\d)[^-]*/g},
+    {key: "02", regExp: /(\d{4}\/[0,1]?\d)[^\/]*/g},
+    {key: "03", regExp: /[0,1]{1}\d-[0-3]{1}\d/g},
+    {key: "01", regExp: new RegExp("(?:"+ monthPart +") [0-3]?\\d[,\\s]{1}\\s?\\d{4}", 'igm')},
+    {key: "01", regExp: /\d{4}年[0,1]?\d月[0-3]?\d日/g},
+    {key: "02", regExp: /\d{4}年[0,1]?\d月/g},
+    {key: "03", regExp: /[0,1]?\d月[0-3]?\d日/g},
+    {key: "04", regExp: /\d+\s?天前/mg},
+    {key: "04", regExp: /\d+\s?days?\sago/mg},
+    {key: "05", regExp: /\d+\s?月前/mg},
+    {key: "05", regExp: /\d+\s?months?\sago/mg},
+    {key: "06", regExp: new RegExp("(?:"+ monthPart +")['\\s]{1}[0-3]?\\d", 'igm')},
+    {key: "07", regExp: /\d+\s?年前/mg},
+    {key: "07", regExp: /\d+\s?years?\sago/mg},
+  ];
 
   /*
    * 根据不同的正则，返回处理函数
    */
-  function getReplace(key){
-
-    var group_01 = ["regExp_01", "regExp_02", "regExp_06", "regExp_11"]
-    var group_02 = ["regExp_03", "regExp_04", "regExp_13"]
-    var group_03 = ["regExp_05", "regExp_15"]
-
-    if(group_01.indexOf(key) > -1){
-      return function(match){
-        var dateStr = match.replace(/年|月/g, '-').replace("日", '');
-        return replace(match, dateStr)
-      }
-    }
-
-    if(group_02.indexOf(key) > -1){
-      return function(match){
-        var dateStr = match.replace(/年|\//g, '-').replace("月", '') + "-01";
-        return replace(match, dateStr)
-      }
-    }
-
-    if(group_03.indexOf(key) > -1){
-      return function(match){
-        var dateStr = (new Date()).getFullYear().toString() + "-" + match.replace(/月/g, '-').replace("日", '');
-        return replace(match, dateStr)
-      }
+  function getHandler(key){
+    switch(key){
+      case "01" : return handler_01();
+      case "02" : return handler_02();
+      case "03" : return handler_03();
+      case "04" : return handler_04();
+      case "05" : return handler_05();
+      case "06" : return handler_06();
+      case "07" : return handler_07();
+      default: return function(match){ return match;};
     }
   }
+
+  function handler_01(){
+    return function(match){
+      var dateStr = match.replace(/年|月/g, '-').replace("日", '');
+      return replace(match, dateStr);
+    };
+  }
+
+  function handler_02(){
+    return function(match){
+      var dateStr = match.replace(/年|\//g, '-').replace("月", '') + "-01";
+      return replace(match, dateStr);
+    };
+  }
+
+  function handler_03(){
+    return function(match){
+      var dateStr = (new Date()).getFullYear().toString() + "-" + match.replace(/月/g, '-').replace("日", '');
+      return replace(match, dateStr);
+    };
+  }
+
+  function handler_04(){
+    return function(match){
+      var n = parseInt(match.match(/\d+/)[0]);
+      return replace(match, (new Date() - n * day));
+    };
+  }
+
+  function handler_05(){
+    return function(match){
+      var n = parseInt(match.match(/\d+/)[0]);
+      return replace(match, (new Date() - n * 30 * day));
+    };
+  }
+
+  function handler_06(){
+    return function(match){
+      return replace(match, match.replace(/'/, ' ') + " " + (new Date()).getFullYear().toString());
+    };
+  }
+
+
+  function handler_07(){
+    return function(match){
+      var n = parseInt(match.match(/\d+/)[0]);
+      return replace(match, (new Date() - n * 365 * day));
+    };
+  }
+
 
   /*
    * 处理函数, 根据时长阀值着色
@@ -114,14 +172,14 @@
   function replace(match, dateStr){
     try{
       var result = match;
-      var diff = Date.now() - Date.parse(dateStr);
+      var diff = Date.now() - new Date(dateStr);
       colors.some(function(item){
         if(diff >= item.threshold){
           result = "<datespan style='color:"+ item.color +";'>" + match +"</datespan>";
-          return true
+          return true;
         }
-        return false
-      })
+        return false;
+      });
       return result;
     }catch(e){
       return match;
@@ -131,8 +189,7 @@
 
   // 主函数
   function colorDate(){
-    //console.log("color date");
-    nodes = getMatchNode();
+    var nodes = getMatchNode();
     nodes.forEach(function(node){
       // replace child node
       var newNode = document.createElement("datetext");
@@ -140,12 +197,12 @@
       rules.forEach(function(rule){
         var match = html.match(rule.regExp);
         if(match){
-          html = html.replace(rule.regExp, getReplace(rule.key))
+          html = html.replace(rule.regExp, getHandler(rule.key));
         }
-      })
-      newNode.innerHTML = html
-      node.parentNode.replaceChild(newNode, node)
-    })
+      });
+      newNode.innerHTML = html;
+      node.parentNode.replaceChild(newNode, node);
+    });
   }
 
 
@@ -168,9 +225,9 @@
         dc.action();
         dc.clearTimeout();
       }, delay);
-    }
+    };
     return dc;
-  }
+  };
 
   /*
    * 判断变更是否来自脚本
@@ -178,7 +235,7 @@
   function isColorDateMotation(mutationRecords){
     return mutationRecords.every(function(record){
       return record.type === "childList" && record.addedNodes.length > 0 && record.addedNodes[0].nodeName.toLowerCase() === "datetext";
-    })
+    });
   }
 
   var delayColorDate = createDelayCall(colorDate, 400);
@@ -187,16 +244,14 @@
    * 初始化 mutationObserver
    */
   function initMutationObserver(){
-    var config = { };
-    var mutated = function(mutationRecords){
+    var observer = new MutationObserver(function(mutationRecords){
       if(isColorDateMotation(mutationRecords)){
         // 本脚本产生的变更，不触发
         // console.log("Ignore motation")
       }else{
         delayColorDate.run();
       }
-    }
-    var observer = new MutationObserver(mutated);
+    });
     observer.observe(document, {
       attributes: false,
       childList: true,
