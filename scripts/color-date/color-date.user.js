@@ -62,7 +62,6 @@
     {color: "#00d700", threshold: 1 * day},
   ];
 
-
   var monthPart = (`
     Jan|January|
     Feb|February|
@@ -82,20 +81,20 @@
    * 判断规则
    */
   var rules = [
-    {key: "01", regExp: /\d{4}-[0,1]?\d-[0-3]?\d/g},
-    {key: "01", regExp: /\d{4}\/[0,1]?\d\/[0-3]?\d/g},
-    {key: "02", regExp: /(\d{4}-[0,1]?\d)[^-]*/g},
-    {key: "02", regExp: /(\d{4}\/[0,1]?\d)[^\/]*/g},
-    {key: "03", regExp: /[0,1]{1}\d-[0-3]{1}\d/g},
+    {key: "01", regExp: /\d{4}-[0,1]?\d-[0-3]?\d/mg},
+    {key: "01", regExp: /\d{4}\/[0,1]?\d\/[0-3]?\d/mg},
+    {key: "02", regExp: /\d{4}-[0,1]?\d(?!^-\d[0-3]?\d)/mg},
+    {key: "02", regExp: /\d{4}\/[0,1]?\d(?!^\/\d[0-3]?\d)/mg},
+    {key: "03", regExp: /(?:\s|^)[0,1]{1}\d-[0-3]{1}\d/mg},
     {key: "01", regExp: new RegExp("(?:"+ monthPart +") [0-3]?\\d[,\\s]{1}\\s?\\d{4}", 'igm')},
-    {key: "01", regExp: /\d{4}年[0,1]?\d月[0-3]?\d日/g},
-    {key: "02", regExp: /\d{4}年[0,1]?\d月/g},
-    {key: "03", regExp: /[0,1]?\d月[0-3]?\d日/g},
+    {key: "01", regExp: /\d{4}年[0,1]?\d月[0-3]?\d日/mg},
+    {key: "02", regExp: /\d{4}年[0,1]?\d月(?!^[0-3]?\d日)/mg},
+    {key: "03", regExp: /(?:\s|^)[0,1]?\d月[0-3]?\d日/mg},
     {key: "04", regExp: /\d+\s?天前/mg},
     {key: "04", regExp: /\d+\s?days?\sago/mg},
     {key: "05", regExp: /\d+\s?月前/mg},
     {key: "05", regExp: /\d+\s?months?\sago/mg},
-    {key: "06", regExp: new RegExp("(?:"+ monthPart +")['\\s]{1}[0-3]?\\d", 'igm')},
+    {key: "06", regExp: new RegExp("(?:"+ monthPart +")['\\s]{1}[0-3]{1}\\d(?![,\\s]{1}\\s?\\d{4})", 'igm')},
     {key: "07", regExp: /\d+\s?年前/mg},
     {key: "07", regExp: /\d+\s?years?\sago/mg},
   ];
@@ -132,7 +131,7 @@
 
   function handler_03(){
     return function(match){
-      var dateStr = (new Date()).getFullYear().toString() + "-" + match.replace(/月/g, '-').replace("日", '');
+      var dateStr = (new Date()).getFullYear().toString() + "-" + match.trim().replace(/月/g, '-').replace("日", '');
       return replace(match, dateStr);
     };
   }
@@ -238,7 +237,6 @@
     });
   }
 
-  var delayColorDate = createDelayCall(colorDate, 400);
 
   /*
    * 初始化 mutationObserver
@@ -260,6 +258,7 @@
     //console.log("init mutationObserver");
   }
 
+  var delayColorDate = createDelayCall(colorDate, 400);
   // 监听变更，触发着色 (适用于动态网页，如: ajax加载内容后产生变更)
   initMutationObserver();
   // 静态网页加载过程中不会产生变更, 直接调用
