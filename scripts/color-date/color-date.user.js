@@ -2,7 +2,7 @@
 // @name     colorDate
 // @namespace https://github.com/mika-cn/user-scripts
 // @description "Set date color according to date 根据网页上日期的新旧程度， 给日期进行着色， 比如说已经是5年前的一个日期会成为红色， 以便提醒阅览者，注意信息可能过于陈旧。"
-// @version  1.0.9
+// @version  1.1.1
 // @grant    none
 // @include *
 // @author   mika
@@ -81,15 +81,15 @@
    * 判断规则
    */
   var rules = [
-    {key: "01", regExp: /\d{4}-[0,1]?\d-[0-3]?\d/mg},
-    {key: "01", regExp: /\d{4}\/[0,1]?\d\/[0-3]?\d/mg},
-    {key: "02", regExp: /\d{4}-[0,1]?\d(?!^-\d[0-3]?\d)/mg},
-    {key: "02", regExp: /\d{4}\/[0,1]?\d(?!^\/\d[0-3]?\d)/mg},
-    {key: "03", regExp: /(?:\s|^)[0,1]{1}\d-[0-3]{1}\d/mg},
+    {key: "01", regExp: /\d{4}-[01]?\d-[0-3]?\d/mg},
+    {key: "01", regExp: /\d{4}\/[01]?\d\/[0-3]?\d/mg},
+    {key: "02", regExp: /\d{4}-[01]{1}\d(?!-\d[0-3]?\d)/mg},
+    {key: "02", regExp: /\d{4}\/[01]{1}\d(?!\/\d[0-3]?\d)/mg},
+    {key: "03", regExp: /(?:\s|^)[01]{1}\d-[0-3]{1}\d/mg},
     {key: "01", regExp: new RegExp("(?:"+ monthPart +") [0-3]?\\d[,\\s]{1}\\s?\\d{4}", 'igm')},
-    {key: "01", regExp: /\d{4}年[0,1]?\d月[0-3]?\d日/mg},
-    {key: "02", regExp: /\d{4}年[0,1]?\d月(?!^[0-3]?\d日)/mg},
-    {key: "03", regExp: /(?:\s|^)[0,1]?\d月[0-3]?\d日/mg},
+    {key: "01", regExp: /\d{4}年[01]?\d月[0-3]?\d日/mg},
+    {key: "02", regExp: /\d{4}年[01]?\d月(?!^[0-3]?\d日)/mg},
+    {key: "03", regExp: /(?:\s|^)[01]?\d月[0-3]?\d日/mg},
     {key: "04", regExp: /\d+\s?天前/mg},
     {key: "04", regExp: /\d+\s?days?\sago/mg},
     {key: "05", regExp: /\d+\s?月前/mg},
