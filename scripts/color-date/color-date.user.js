@@ -2,7 +2,7 @@
 // @name     colorDate
 // @namespace https://github.com/mika-cn/user-scripts
 // @description "Set date color according to date 根据网页上日期的新旧程度， 给日期进行着色， 比如说已经是5年前的一个日期会成为红色， 以便提醒阅览者，注意信息可能过于陈旧。"
-// @version  1.1.3
+// @version  1.1.4
 // @grant    none
 // @include *
 // @author   mika
@@ -10,6 +10,7 @@
 /**
  *
  * # CHANGE LOG
+ * 2018-04-14 支持Feb 01 '17 格式
  * 2018-04-13 修改替换方式，可应对多个正则存在包含关系的情况
  *
  */
@@ -108,6 +109,8 @@
     {key: "01", regExp: /\d{4}\.[01]?\d\.[0-3]?\d/mg},
     // month dd, yyyy
     {key: "01", regExp: new RegExp("(?:"+ monthPart +") [0-3]?\\d[,\\s]{1}\\s?\\d{4}", 'igm')},
+    // month dd 'yy
+    {key: "09", regExp: new RegExp("(?:"+ monthPart +") [0-3]?\\d\\s'\\d{2}", 'igm')},
     // yyyy年mm月dd日
     {key: "01", regExp: /\d{4}年[01]?\d月[0-3]?\d日/mg},
     // yyyy-mm
@@ -135,7 +138,7 @@
     // month yyyy
     {key: "08", regExp: new RegExp("(?:"+ monthPart +")['\\s]{1}\\d{4}", 'igm')},
     // month dd
-    {key: "06", regExp: new RegExp("(?:"+ monthPart +")['\\s]{1}[0-3]{1}\\d", 'igm')},
+    {key: "06", regExp: new RegExp("(?:"+ monthPart +")['\\s]{1}[0-3]?\\d", 'igm')},
   ];
 
   /*
@@ -151,6 +154,7 @@
       case "06" : return handler_06();
       case "07" : return handler_07();
       case "08" : return handler_08();
+      case "09" : return handler_09();
       default: return function(match){ return match;};
     }
   }
@@ -160,6 +164,17 @@
       var dateStr = match.replace(/年|月|\./g, '-').replace("日", '');
       return replace(match, dateStr);
     };
+  }
+
+  function handler_09(){
+    return function(match){
+      var parts = match.split("'");
+      var year  = parts.pop();
+      var curr = new Date().getFullYear();
+      var yStr = '' + Math.floor(curr%100 > parseInt(year) ? curr/100 : curr/100 - 1).toString() + year;
+      parts.push(yStr);
+      return replace(match, parts.join(" "));
+    }
   }
 
   function handler_02(){
