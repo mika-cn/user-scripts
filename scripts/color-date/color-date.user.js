@@ -2,7 +2,7 @@
 // @name     colorDate
 // @namespace https://github.com/mika-cn/user-scripts
 // @description "Set date color according to date 根据网页上日期的新旧程度， 给日期进行着色， 比如说已经是5年前的一个日期会成为红色， 以便提醒阅览者，注意信息可能过于陈旧。"
-// @version  1.1.4
+// @version  1.1.5
 // @grant    none
 // @include *
 // @author   mika
@@ -10,7 +10,7 @@
 /**
  *
  * # CHANGE LOG
- * 2018-04-14 支持Feb 01 '17 格式
+ * 2018-04-14 支持<Feb 01 '17> 和 <2018年> 格式
  * 2018-04-13 修改替换方式，可应对多个正则存在包含关系的情况
  *
  */
@@ -133,6 +133,8 @@
     {key: "05", regExp: /\d+\s?months?\sago/mg},
     // N 年前
     {key: "07", regExp: /\d+\s?年前/mg},
+    // yyyy年
+    {key: "10", regExp: /\d{4}\s?年/mg},
     // N years ago
     {key: "07", regExp: /\d+\s?years?\sago/mg},
     // month yyyy
@@ -155,6 +157,7 @@
       case "07" : return handler_07();
       case "08" : return handler_08();
       case "09" : return handler_09();
+      case "10" : return handler_10();
       default: return function(match){ return match;};
     }
   }
@@ -224,6 +227,13 @@
       var v = match.replace(/'/, ' ').split(' ').join(" 01 ");
       return replace(match, v);
     };
+  }
+
+  function handler_10(){
+    return function(match){
+      var year = parseInt(match.match(/\d+/)[0]).toString();
+      return replace(match, year + "-01-01");
+    }
   }
 
   /*
@@ -326,6 +336,7 @@
    * 初始化 mutationObserver
    */
   function initMutationObserver(){
+    var delayColorDate = createDelayCall(colorDate, 400);
     var observer = new MutationObserver(function(mutationRecords){
       if(isColorDateMotation(mutationRecords)){
         // 本脚本产生的变更，不触发
@@ -342,9 +353,8 @@
     //console.log("init mutationObserver");
   }
 
-  var delayColorDate = createDelayCall(colorDate, 400);
   // 监听变更，触发着色 (适用于动态网页，如: ajax加载内容后产生变更)
-  initMutationObserver();
+  if(MutationObserver){ initMutationObserver(); }
   // 静态网页加载过程中不会产生变更, 直接调用
   setTimeout(colorDate, 400);
   setTimeout(colorDate, 1000);
