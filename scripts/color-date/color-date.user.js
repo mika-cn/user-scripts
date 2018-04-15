@@ -2,7 +2,7 @@
 // @name     colorDate
 // @namespace https://github.com/mika-cn/user-scripts
 // @description "Set date color according to date 根据网页上日期的新旧程度， 给日期进行着色， 比如说已经是5年前的一个日期会成为红色， 以便提醒阅览者，注意信息可能过于陈旧。"
-// @version  1.1.5
+// @version  1.1.6
 // @grant    none
 // @include *
 // @author   mika
@@ -112,17 +112,17 @@
     // month dd 'yy
     {key: "09", regExp: new RegExp("(?:"+ monthPart +") [0-3]?\\d\\s'\\d{2}", 'igm')},
     // yyyy年mm月dd日
-    {key: "01", regExp: /\d{4}年[01]?\d月[0-3]?\d日/mg},
+    {key: "01", regExp: /\d{4}\s?年\s?[01]?\d\s?月\s?[0-3]?\d\s?日/mg},
     // yyyy-mm
     {key: "02", regExp: /\d{4}-[01]{1}\d/mg},
     // yyyy/mm
     {key: "02", regExp: /\d{4}\/[01]{1}\d/mg},
     // yyyy年mm月
-    {key: "02", regExp: /\d{4}年[01]?\d月/mg},
+    {key: "02", regExp: /\d{4}\s?年\s?[01]?\d\s?月/mg},
     // mm-dd
     {key: "03", regExp: /[01]{1}\d-[0-3]{1}\d/mg},
     // mm月dd日
-    {key: "03", regExp: /[01]?\d月[0-3]?\d日/mg},
+    {key: "03", regExp: /[01]?\d\s?月\s?[0-3]?\d\s?日/mg},
     // N 天前
     {key: "04", regExp: /\d+\s?天前/mg},
     // N days ago
@@ -294,7 +294,7 @@
   // 把标记替换为着色后的人日期
   function replaceMark(text, values){
     return text.replace(/@\[\[\d+\]\]/mg, function(mark){
-      var idx = parseInt(mark.match(/\d+/));
+      var idx = parseInt(mark.match(/\d+/)[0]);
       return values[idx]
     });
   }
