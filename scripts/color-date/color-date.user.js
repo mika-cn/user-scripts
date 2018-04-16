@@ -2,7 +2,7 @@
 // @name     colorDate
 // @namespace https://github.com/mika-cn/user-scripts
 // @description "Set date color according to date 根据网页上日期的新旧程度， 给日期进行着色， 比如说已经是5年前的一个日期会成为红色， 以便提醒阅览者，注意信息可能过于陈旧。"
-// @version  1.1.7
+// @version  1.1.8
 // @grant    none
 // @include *
 // @author   mika
@@ -11,6 +11,8 @@
  *
  * # CHANGE LOG
  * 2018-04-16 支持<01 Feb 2017> 格式
+ *            添加 noscript 等特殊标签到黑名单
+ *            兼容类似<textarea>$HTML</textarea>这种s13用法
  * 2018-04-14 支持<Feb 01 '17> 和 <2018年> 格式
  * 2018-04-13 修改替换方式，可应对多个正则存在包含关系的情况
  *
@@ -58,7 +60,13 @@
     return document.createNodeIterator(
       document.body,
       NodeFilter.SHOW_TEXT, function(node) {
-        if(['script', 'style', 'datetext', 'datespan'].indexOf(node.parentNode.nodeName.toLowerCase()) > -1){
+        var blackList = ['style', 'script', 'noscript', 'noframes', 'canvas', 'template', 'datetext', 'datespan'];
+        if(blackList.indexOf(node.parentNode.nodeName.toLowerCase()) > -1){
+          return NodeFilter.FILTER_REJECT;
+        }else if(/<.*>/mg.test(node.nodeValue)){
+          /*
+           * 避免: <textarea>$HTML</textarea> 这种s13用法,这里整个$HTML被认为文本节点(Orz...)。
+           */
           return NodeFilter.FILTER_REJECT;
         }else{
           return NodeFilter.FILTER_ACCEPT;
