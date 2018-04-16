@@ -2,7 +2,7 @@
 // @name     colorDate
 // @namespace https://github.com/mika-cn/user-scripts
 // @description "Set date color according to date 根据网页上日期的新旧程度， 给日期进行着色， 比如说已经是5年前的一个日期会成为红色， 以便提醒阅览者，注意信息可能过于陈旧。"
-// @version  1.1.6
+// @version  1.1.7
 // @grant    none
 // @include *
 // @author   mika
@@ -10,6 +10,7 @@
 /**
  *
  * # CHANGE LOG
+ * 2018-04-16 支持<01 Feb 2017> 格式
  * 2018-04-14 支持<Feb 01 '17> 和 <2018年> 格式
  * 2018-04-13 修改替换方式，可应对多个正则存在包含关系的情况
  *
@@ -109,6 +110,8 @@
     {key: "01", regExp: /\d{4}\.[01]?\d\.[0-3]?\d/mg},
     // month dd, yyyy
     {key: "01", regExp: new RegExp("(?:"+ monthPart +") [0-3]?\\d[,\\s]{1}\\s?\\d{4}", 'igm')},
+    // dd month yyyy
+    {key: "01", regExp: new RegExp("[0-3]?\\d (?:"+ monthPart +")\\s?\\d{4}", 'igm')},
     // month dd 'yy
     {key: "09", regExp: new RegExp("(?:"+ monthPart +") [0-3]?\\d\\s'\\d{2}", 'igm')},
     // yyyy年mm月dd日
