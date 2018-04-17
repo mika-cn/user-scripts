@@ -63,7 +63,7 @@
         var blackList = ['style', 'script', 'noscript', 'noframes', 'canvas', 'template', 'datetext', 'datespan'];
         if(blackList.indexOf(node.parentNode.nodeName.toLowerCase()) > -1){
           return NodeFilter.FILTER_REJECT;
-        }else if(/<.*>/mg.test(node.nodeValue)){
+        }else if(/<[a-zA-Z]+>/mg.test(node.nodeValue)){
           /*
            * 避免: <textarea>$HTML</textarea> 这种s13用法,这里整个$HTML被认为文本节点(Orz...)。
            */
