@@ -2,7 +2,7 @@
 // @name     colorDate
 // @namespace https://github.com/mika-cn/user-scripts
 // @description "Set date color according to date 根据网页上日期的新旧程度， 给日期进行着色， 比如说已经是5年前的一个日期会成为红色， 以便提醒阅览者，注意信息可能过于陈旧。"
-// @version  1.1.8
+// @version  1.1.9
 // @grant    none
 // @include *
 // @author   mika
@@ -10,6 +10,8 @@
 /**
  *
  * # CHANGE LOG
+ * 2018-04-17 支持<01.01> <2007.09> 格式
+ *            修正标签正则
  * 2018-04-16 支持<01 Feb 2017> 格式
  *            添加 noscript 等特殊标签到黑名单
  *            兼容类似<textarea>$HTML</textarea>这种s13用法
@@ -124,14 +126,12 @@
     {key: "09", regExp: new RegExp("(?:"+ monthPart +") [0-3]?\\d\\s'\\d{2}", 'igm')},
     // yyyy年mm月dd日
     {key: "01", regExp: /\d{4}\s?年\s?[01]?\d\s?月\s?[0-3]?\d\s?日/mg},
-    // yyyy-mm
-    {key: "02", regExp: /\d{4}-[01]{1}\d/mg},
-    // yyyy/mm
-    {key: "02", regExp: /\d{4}\/[01]{1}\d/mg},
+    // yyyy-mm | yyyy/mm | yyyy.mm
+    {key: "02", regExp: /\d{4}[-\/\.]{1}[01]{1}\d/mg},
     // yyyy年mm月
     {key: "02", regExp: /\d{4}\s?年\s?[01]?\d\s?月/mg},
-    // mm-dd
-    {key: "03", regExp: /[01]{1}\d-[0-3]{1}\d/mg},
+    // mm-dd | mm/dd | mm.dd
+    {key: "03", regExp: /[01]{1}\d[-\/\.][0-3]{1}\d/mg},
     // mm月dd日
     {key: "03", regExp: /[01]?\d\s?月\s?[0-3]?\d\s?日/mg},
     // N 天前
@@ -193,14 +193,14 @@
 
   function handler_02(){
     return function(match){
-      var dateStr = match.replace(/年|\//g, '-').replace("月", '') + "-01";
+      var dateStr = match.replace(/年|\/|\./g, '-').replace("月", '') + "-01";
       return replace(match, dateStr);
     };
   }
 
   function handler_03(){
     return function(match){
-      var dateStr = (new Date()).getFullYear().toString() + "-" + match.trim().replace(/月/g, '-').replace("日", '');
+      var dateStr = (new Date()).getFullYear().toString() + "-" + match.trim().replace(/月|\/|\./g, '-').replace("日", '');
       return replace(match, dateStr);
     };
   }
