@@ -2,7 +2,7 @@
 // @name     colorDate
 // @namespace https://github.com/mika-cn/user-scripts
 // @description "Set date color according to date 根据网页上日期的新旧程度， 给日期进行着色， 比如说已经是5年前的一个日期会成为红色， 以便提醒阅览者，注意信息可能过于陈旧。"
-// @version  1.1.9
+// @version  1.2.0
 // @grant    none
 // @include *
 // @author   mika
@@ -22,62 +22,6 @@
 
 (function(){
   'use strict';
-
-  // 主函数
-  function colorDate(){
-    var nodes = getMatchNode();
-    nodes.forEach(function(node){
-      var newNode = document.createElement("datetext");
-      newNode.innerHTML = applyRules(node.nodeValue, rules)
-      // replace child node
-      node.parentNode.replaceChild(newNode, node);
-    });
-  }
-
-
-  /*
-   * 根据规则(判断是否是日期)，获取满足的节点
-   */
-  function getMatchNode(){
-    var nodes = [];
-    var currentNode;
-    var nodeIterator = getTextNodeIterator();
-    while (currentNode = nodeIterator.nextNode()) {
-      var v = currentNode.nodeValue;
-      var rule = rules.some(function(rule){
-        return !!v.match(rule.regExp);
-      });
-      if(rule){
-        nodes.push(currentNode);
-      }
-    }
-    return nodes;
-  }
-
-
-  /*
-   * 获取文本节点迭代器
-   */
-  function getTextNodeIterator(){
-    return document.createNodeIterator(
-      document.body,
-      NodeFilter.SHOW_TEXT, function(node) {
-        var blackList = ['style', 'script', 'noscript', 'noframes', 'canvas', 'template', 'datetext', 'datespan'];
-        if(blackList.indexOf(node.parentNode.nodeName.toLowerCase()) > -1){
-          return NodeFilter.FILTER_REJECT;
-        }else if(/<[a-zA-Z]+>/mg.test(node.nodeValue)){
-          /*
-           * 避免: <textarea>$HTML</textarea> 这种s13用法,这里整个$HTML被认为文本节点(Orz...)。
-           */
-          return NodeFilter.FILTER_REJECT;
-        }else{
-          return NodeFilter.FILTER_ACCEPT;
-        }
-      }
-   );
-  }
-
-
 
   /*
    * 时长阀值与色值
@@ -153,6 +97,65 @@
     // month dd
     {key: "06", regExp: new RegExp("(?:"+ monthPart +")['\\s]{1}[0-3]?\\d", 'igm')},
   ];
+
+
+
+  // 主函数
+  function colorDate(){
+    var nodes = getMatchNode();
+    nodes.forEach(function(node){
+      var newNode = document.createElement("datetext");
+      newNode.innerHTML = applyRules(node.nodeValue, rules)
+      // replace child node
+      node.parentNode.replaceChild(newNode, node);
+    });
+  }
+
+
+  /*
+   * 根据规则(判断是否是日期)，获取满足的节点
+   */
+  function getMatchNode(){
+    var nodes = [];
+    var currentNode;
+    var nodeIterator = getTextNodeIterator();
+    while (currentNode = nodeIterator.nextNode()) {
+      var v = currentNode.nodeValue;
+      var rule = rules.some(function(rule){
+        return !!v.match(rule.regExp);
+      });
+      if(rule){
+        nodes.push(currentNode);
+      }
+    }
+    return nodes;
+  }
+
+
+  /*
+   * 获取文本节点迭代器
+   */
+  function getTextNodeIterator(){
+    return document.createNodeIterator(
+      document.body,
+      NodeFilter.SHOW_TEXT, function(node) {
+        var blackList = ['style', 'script', 'noscript', 'noframes', 'canvas', 'template', 'datetext', 'datespan'];
+        if(blackList.indexOf(node.parentNode.nodeName.toLowerCase()) > -1){
+          return NodeFilter.FILTER_REJECT;
+        }else if(/<[a-zA-Z]+>/mg.test(node.nodeValue)){
+          /*
+           * 避免: <textarea>$HTML</textarea> 这种s13用法,这里整个$HTML被认为文本节点(Orz...)。
+           */
+          return NodeFilter.FILTER_REJECT;
+        }else{
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      }
+   );
+  }
+
+
+
 
   /*
    * 根据不同的正则，返回处理函数
