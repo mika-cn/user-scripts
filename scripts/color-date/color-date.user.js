@@ -2,7 +2,7 @@
 // @name     colorDate
 // @namespace https://github.com/mika-cn/user-scripts
 // @description "Set date color according to date 根据网页上日期的新旧程度， 给日期进行着色， 比如说已经是5年前的一个日期会成为红色， 以便提醒阅览者，注意信息可能过于陈旧。"
-// @version  1.2.0
+// @version  1.3.0
 // @grant    none
 // @include *
 // @author   mika
@@ -10,6 +10,7 @@
 /**
  *
  * # CHANGE LOG
+ * 2018-06-18 [修复] 对于隐藏的文本，不再进行着色
  * 2018-04-17 支持<01.01> <2007.09> 格式
  *            修正标签正则
  * 2018-04-16 支持<01 Feb 2017> 格式
@@ -140,16 +141,23 @@
       document.body,
       NodeFilter.SHOW_TEXT, function(node) {
         var blackList = ['style', 'script', 'noscript', 'noframes', 'canvas', 'template', 'datetext', 'datespan'];
-        if(blackList.indexOf(node.parentNode.nodeName.toLowerCase()) > -1){
+        var parentNode = node.parentNode;
+        if(blackList.indexOf(parentNode.nodeName.toLowerCase()) > -1){
           return NodeFilter.FILTER_REJECT;
-        }else if(/<[a-zA-Z]+>/mg.test(node.nodeValue)){
-          /*
-           * 避免: <textarea>$HTML</textarea> 这种s13用法,这里整个$HTML被认为文本节点(Orz...)。
-           */
-          return NodeFilter.FILTER_REJECT;
-        }else{
-          return NodeFilter.FILTER_ACCEPT;
         }
+
+        /*
+         * 隐藏了的文本，不处理
+         * - 有的程序员会使用隐藏文本来存储数据（比如存储 html 或者 链接)
+         */
+        var style = window.getComputedStyle(parentNode);
+        if(style.display === "none"){
+          return NodeFilter.FILTER_REJECT;
+        }
+        if(style.visibility === "hidden"){
+          return NodeFilter.FILTER_REJECT;
+        }
+        return NodeFilter.FILTER_ACCEPT;
       }
    );
   }
